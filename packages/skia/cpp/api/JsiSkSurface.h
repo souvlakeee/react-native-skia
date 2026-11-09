@@ -127,7 +127,14 @@ public:
     }
     if (count > 1 && arguments[1].isObject()) {
       auto jsiImage = getJsiObject<JsiSkImage>(runtime, arguments[1]);
-      jsiImage->setObject(image);
+      jsiImage->setSnapshot(std::move(image));
+      // The wrapper now holds another texture: tell the GC its size, as
+      // NativeObject::create does for a new wrapper.
+      auto pressure = jsiImage->getMemoryPressure();
+      if (pressure > 0) {
+        arguments[1].asObject(runtime).setExternalMemoryPressure(runtime,
+                                                                 pressure);
+      }
       return jsi::Value(runtime, arguments[1]);
     }
     return makeJsiObject(

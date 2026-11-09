@@ -611,6 +611,12 @@ public:
     return 0;
   }
 
+  /** Swaps in a snapshot this image now owns (makeImageSnapshot's reuse). */
+  void setSnapshot(sk_sp<SkImage> image) {
+    setObject(std::move(image));
+    _sharesTexture = false;
+  }
+
 private:
   bool _sharesTexture;
 };
