@@ -256,9 +256,11 @@ describe("Paint", () => {
     const { width, height } = surface;
     const c = vec(width / 2, height / 2);
     const r = (width - strokeWidth) / 2;
+    // The node's own paint is drawn first and its <Paint> children over it,
+    // so no red shows.
     const result = await surface.draw(
       <>
-        <Circle c={c} r={r} color="transparent">
+        <Circle c={c} r={r} color="red">
           <Paint color="lightblue" />
           <Paint color="#adbce6" style="stroke" strokeWidth={strokeWidth} />
           <Paint color="#ade6d8" style="stroke" strokeWidth={strokeWidth / 2} />
