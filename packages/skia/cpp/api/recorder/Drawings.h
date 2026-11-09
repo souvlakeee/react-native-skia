@@ -694,6 +694,15 @@ public:
   }
 
   void play(DrawingCtx *ctx) override {
+    // MakeCopy reads one color and one texture coordinate per vertex, so a
+    // shorter array would be read past its end. This runs on the render
+    // thread, where a throw would end the app: skip the draw instead.
+    const auto vertexCount = props.vertices.size();
+    if ((props.colors.has_value() && props.colors->size() != vertexCount) ||
+        (props.textures.has_value() &&
+         props.textures->size() != vertexCount)) {
+      return;
+    }
     // Create vertices using MakeCopy
     auto vertices = SkVertices::MakeCopy(
         props.mode, static_cast<int>(props.vertices.size()),
